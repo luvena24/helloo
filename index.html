@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy Birthday Ali</title>
+  <style>
+    :root {
+      --bg-dark: #0a0a10;
+      --card-bg: rgba(20, 20, 32, 0.75);
+      --accent-color: #e8a5c8;
+      --gold-color: #f3d08c;
+      --text-main: #f5f5f7;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Canvas Fireworks & Background */
+    #canvas-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative;
+      z-index: 10;
+      width: 90%;
+      max-width: 680px;
+      text-align: center;
+      padding: 32px 28px;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+      margin: 20px 0;
+    }
+
+    h1 {
+      font-size: 2.4rem;
+      font-weight: 600;
+      color: var(--gold-color);
+      letter-spacing: 1px;
+      margin-bottom: 18px;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 500;
+      color: var(--accent-color);
+      margin-bottom: 14px;
+    }
+
+    p {
+      line-height: 1.8;
+      font-size: 1.05rem;
+      color: #e0e0e5;
+      margin-bottom: 20px;
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #d883b0, #c45b8e);
+      color: #fff;
+      border: none;
+      padding: 14px 32px;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 30px;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(216, 131, 176, 0.3);
+      transition: all 0.3s ease;
+      margin: 10px 5px;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(216, 131, 176, 0.5);
+    }
+
+    .nav-btns {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 25px;
+    }
+
+    .section {
+      display: none;
+      animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .letter-card {
+      background: rgba(10, 10, 18, 0.6);
+      padding: 24px;
+      border-radius: 16px;
+      border-left: 3px solid var(--accent-color);
+      text-align: left;
+      font-size: 1.02rem;
+      line-height: 1.85;
+      margin-top: 15px;
+      white-space: pre-line;
+    }
+
+    input[type="text"] {
+      width: 80%;
+      padding: 14px 20px;
+      border-radius: 30px;
+      border: 1px solid var(--accent-color);
+      background: rgba(0, 0, 0, 0.4);
+      color: #fff;
+      font-size: 1.05rem;
+      text-align: center;
+      outline: none;
+      margin: 15px 0;
+    }
+
+    /* Botanical Lily Bouquet Game */
+    .bouquet-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      margin: 20px 0;
+    }
+
+    .bouquet-preview {
+      width: 240px;
+      height: 240px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 50%;
+      border: 1px dashed rgba(255, 255, 255, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .flower-options {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .flower-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 90px;
+      text-align: center;
+    }
+
+    .flower-card:hover {
+      border-color: var(--accent-color);
+      background: rgba(232, 165, 200, 0.15);
+    }
+
+    .flower-card svg {
+      width: 60px;
+      height: 60px;
+    }
+
+    .flower-card span {
+      display: block;
+      font-size: 0.8rem;
+      margin-top: 6px;
+      color: #ccc;
+    }
+
+    /* Cake Styling */
+    .cake {
+      position: relative;
+      width: 180px;
+      height: 110px;
+      background: #e2a8c3;
+      border-radius: 12px 12px 0 0;
+      margin: 50px auto 20px;
+    }
+
+    .cake::before {
+      content: '';
+      position: absolute;
+      top: -20px;
+      left: 0;
+      width: 100%;
+      height: 20px;
+      background: #f4c5dc;
+      border-radius: 10px 10px 0 0;
+    }
+
+    .candle {
+      position: absolute;
+      top: -40px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 14px;
+      height: 25px;
+      background: #ffffff;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    .flame {
+      position: absolute;
+      top: -16px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 12px;
+      height: 18px;
+      background: #ffd700;
+      border-radius: 50% 50% 20% 20%;
+      box-shadow: 0 0 12px #ff9800, 0 0 20px #ff5722;
+      animation: flicker 0.6s infinite alternate;
+    }
+
+    .flame.off { display: none; }
+
+    @keyframes flicker {
+      0% { transform: translateX(-50%) scale(1); }
+      100% { transform: translateX(-50%) scale(1.15); }
+    }
+
+    /* Botanical Night Flowers Decorative Area */
+    .night-flowers-box {
+      width: 100%;
+      height: 140px;
+      background: linear-gradient(to top, #05050b, #111122);
+      border-radius: 16px;
+      margin-top: 20px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Fireworks Canvas -->
+  <canvas id="canvas-bg"></canvas>
+
+  <!-- Audio Player (Semua Aku Dirayakan - Nadin Amizah) -->
+  <audio id="bg-music" loop preload="auto">
+    <source src="https://files.catbox.moe/54s3qf.mp3" type="audio/mpeg">
+  </audio>
+
+  <div class="container">
+
+    <!-- SLIDE 1: SCREEN GELAP AWAL -->
+    <div id="slide-1" class="section active">
+      <div style="padding: 40px 0;">
+        <p style="color: #888; font-size: 0.95rem; margin-bottom: 25px;">Sentuh tombol di bawah untuk membuka ucapan</p>
+        <button class="btn" onclick="startExperience()">Buka Ucapan</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 1.5: HAPPY BIRTHDAY ALI & FIREWORKS -->
+    <div id="slide-1b" class="section">
+      <h1>Happy Birthday Ali</h1>
+      <p>Semoga hari ini menjadi awal dari tahun yang penuh dengan kebahagiaan dan kebaikan.</p>
+      <button class="btn" onclick="nextSlide(2)">Lanjut ke Buket Bunga</button>
+    </div>
+
+    <!-- SLIDE 2: GAME MERANGKAI BUKET BUNGA LILY -->
+    <div id="slide-2" class="section">
+      <h2>Merangkai Buket Bunga Lily</h2>
+      <p>Pilih bunga lily yang paling kamu sukai untuk disusun ke dalam buket:</p>
+      
+      <div class="bouquet-container">
+        <div class="bouquet-preview" id="bouquet-display">
+          <span id="bouquet-placeholder" style="color: #666; font-size: 0.9rem;">Buket Bunga Lily</span>
+        </div>
+
+        <div class="flower-options">
+          <!-- White Botanical Lily -->
+          <div class="flower-card" onclick="addLily('#ffffff', '#e2e2e2')">
+            <svg viewBox="0 0 100 100">
+              <path d="M50 50 C20 15, 20 0, 50 10 C80 0, 80 15, 50 50 Z" fill="#ffffff" stroke="#ccc" />
+              <path d="M50 50 C15 80, 0 70, 10 45 C0 15, 20 20, 50 50 Z" fill="#f8f8f8" stroke="#ccc" />
+              <path d="M50 50 C85 80, 100 70, 90 45 C100 15, 80 20, 50 50 Z" fill="#f0f0f0" stroke="#ccc" />
+              <circle cx="50" cy="45" r="3" fill="#d4af37" />
+            </svg>
+            <span>White Lily</span>
+          </div>
+
+          <!-- Stargazer Pink Lily -->
+          <div class="flower-card" onclick="addLily('#e88ab5', '#c45b8e')">
+            <svg viewBox="0 0 100 100">
+              <path d="M50 50 C20 15, 20 0, 50 10 C80 0, 80 15, 50 50 Z" fill="#e88ab5" stroke="#b04278" />
+              <path d="M50 50 C15 80, 0 70, 10 45 C0 15, 20 20, 50 50 Z" fill="#df78a8" stroke="#b04278" />
+              <path d="M50 50 C85 80, 100 70, 90 45 C100 15, 80 20, 50 50 Z" fill="#d8689c" stroke="#b04278" />
+              <circle cx="50" cy="45" r="3" fill="#ffd700" />
+            </svg>
+            <span>Pink Lily</span>
+          </div>
+
+          <!-- Royal Blue Lily -->
+          <div class="flower-card" onclick="addLily('#5c85d6', '#3b5998')">
+            <svg viewBox="0 0 100 100">
+              <path d="M50 50 C20 15, 20 0, 50 10 C80 0, 80 15, 50 50 Z" fill="#5c85d6" stroke="#2a437e" />
+              <path d="M50 50 C15 80, 0 70, 10 45 C0 15, 20 20, 50 50 Z" fill="#4a73c4" stroke="#2a437e" />
+              <path d="M50 50 C85 80, 100 70, 90 45 C100 15, 80 20, 50 50 Z" fill="#3b62b3" stroke="#2a437e" />
+              <circle cx="50" cy="45" r="3" fill="#00ffff" />
+            </svg>
+            <span>Blue Lily</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-btns">
+        <button class="btn" onclick="nextSlide('1b')">Kembali</button>
+        <button class="btn" onclick="nextSlide(3)">Lanjut</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 3: TANGGAL ULTAH -->
+    <div id="slide-3" class="section">
+      <h2>Verifikasi Hari Ulang Tahun</h2>
+      <p>Silakan ketik tanggal hari ulang tahunmu:</p>
+      <input type="text" id="date-input" placeholder="Ketik: 28 september">
+      <br>
+      <button class="btn" onclick="verifyDate()">Masuk</button>
+      <p id="date-error" style="color: #ff6b6b; font-size: 0.9rem; margin-top: 10px; display: none;">Tolong ketik dengan format "28 september" ya!</p>
+    </div>
+
+    <!-- SLIDE 4: UCAPAN UTAMA -->
+    <div id="slide-4" class="section">
+      <div class="letter-card">
+Happy birthday ya. Sending you my warmest birthday wishes today and wishing you a very wonderful year ahead! Semoga di usia yang baru ini, kamu selalu dikelilingi kebaikan, kesehatan, ketenangan hati, serta dilimpahi banyak kebahagiaan dan keberkahan. Semoga segalanya berjalan lebih indah, membawa banyak senyuman baru, dan kamu selalu diberi kemudahan dalam setiap langkah hidupmu hingga semua harapan baikmu bisa terwujud satu per satu. Hope this new chapter treats you with so much kindness, enjoy your special day, and please take good care of yourself always!
+      </div>
+      <div class="nav-btns">
+        <button class="btn" onclick="nextSlide(3)">Kembali</button>
+        <button class="btn" onclick="nextSlide(5)">Lanjut</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 5: KESEHATAN -->
+    <div id="slide-5" class="section">
+      <div class="letter-card">
+Oiya, jangan lupa untuk selalu take good care of your health and safety ya. Kalau lagi di jalan atau berkendara, tolong selalu hati-hati, waspada, dan lihat-lihat situasi sekitar supaya perjalanan kamu selalu tenang, aman, dan terhindar dari hal-hal yang tidak diinginkan.
+
+Jangan lupa untuk tetap jaga pola makan sehari-hari, jangan sering telat makan, perhatikan asupan air putih, dan usahakan tidur yang cukup. Jangan cuma kesehatan fisik, tapi your mental health and peace of mind juga penting banget—kalau lagi banyak pikiran atau capek, take a break sebentar dan jangan terlalu dipaksakan ya.
+
+Kalau sewaktu-waktu tubuh mulai merasa kurang fit atau sakit, langsung minum obat dan luangkan waktu untuk full rest sampai benar-benar pulih kembali. Please stay safe, stay healthy, and take care of yourself properly because your well-being always matters the most.
+      </div>
+      <div class="nav-btns">
+        <button class="btn" onclick="nextSlide(4)">Kembali</button>
+        <button class="btn" onclick="nextSlide(6)">Lanjut</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 6: KULIAH -->
+    <div id="slide-6" class="section">
+      <div class="letter-card">
+Oiya, untuk kuliahnya juga tetap semangat ya. Semoga setiap proses belajar, tugas-tugas, dan ujian yang sedang atau akan kamu jalani selalu diberi kemudahan, kelancaran, serta membawa banyak ilmu dan pengalaman yang bermanfaat. Jangan lupa untuk menikmati setiap prosesnya, dan kalau sewaktu-waktu merasa lelah atau kewalahan, luangkan waktu untuk take a break sejenak—jangan terlalu menekan diri sendiri. Semoga semua perjuangan dan usaha keras kamu di kampus membuahkan hasil yang indah serta membanggakan. *I know you are doing your best, so stay confident, keep going, and good luck with all of your studies and future ahead!
+      </div>
+      <div class="nav-btns">
+        <button class="btn" onclick="nextSlide(5)">Kembali</button>
+        <button class="btn" onclick="nextSlide(7)">Lanjut</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 7: PERJALANAN HIDUP -->
+    <div id="slide-7" class="section">
+      <div class="letter-card">
+Satu hal lagi, untuk perjalanan hidup kamu ke depannya, semoga kamu selalu diberi ketenangan, kekuatan, dan keberanian ya. Hidup mungkin tidak selalu mudah dan kadang ada hari-hari yang melelahkan, tapi percayalah kamu selalu punya kemampuan untuk melewatinya. Apapun yang sedang kamu perjuangkan atau impikan saat ini, semoga selalu dipermudah dan perlahan menemukan jalan yang indah. Please be kind to yourself, nikmati setiap prosesnya, dan ingat untuk tidak membandingkan perjalananmu dengan orang lain karena setiap orang punya waktunya masing-masing. Saat situasi terasa berat, ingat untuk selalu bernapas sejenak dan take one step at a time. *You are doing just fine, so keep going, stay hopeful, and wish you a truly beautiful life journey filled with peace, warmth, and gentle days ahead
+      </div>
+      <div class="nav-btns">
+        <button class="btn" onclick="nextSlide(6)">Kembali</button>
+        <button class="btn" onclick="nextSlide(8)">Lanjut</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 8: SUPPORT & DUKUNGAN -->
+    <div id="slide-8" class="section">
+      <div class="letter-card">
+Kalau belakangan ini atau sewaktu-waktu kamu lagi merasa sedih, capek, atau berat, wajar banget kok... it is completely okay to not be okay sometimes. Kamu tidak harus selalu terlihat kuat setiap saat. Kalau butuh waktu untuk sendiri atau luapkan isi hati, take all the time you need. Ingat ya, kamu tidak pernah harus menanggung semuanya sendirian. If you ever need someone to talk to or just a safe space to vent, I am always here for you, tapi kalau belum siap cerita pun tidak apa-apa sama sekali. Please don't be too hard on yourself. Percayalah kalau masa-masa sulit ini sifatnya sementara dan brighter days are definitely coming for you. Tetap peluk diri sendiri, take a deep breath, dan semoga harimu perlahan terasa lebih ringan, tenang, dan hangat kembali ya. *Sending you lots of warm thoughts and gentle hugs.
+      </div>
+      <div class="nav-btns">
+        <button class="btn" onclick="nextSlide(7)">Kembali</button>
+        <button class="btn" onclick="nextSlide(9)">Lanjut</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 9: BAHAGIA & PENCAPAIAN -->
+    <div id="slide-9" class="section">
+      <div class="letter-card">
+Dan kalau kamu lagi merasa senang, bahagia, atau sedang merayakan pencapaian sekecil apa pun, I am honestly so, so happy for you. Semoga rasa bahagia, ketenangan, dan kehangatan itu bisa bertahan lama di dalam hatimu. Enjoy every single moment of your joy, karena kamu memang sangat layak (you truly deserve) untuk mendapatkan semua kebaikan dan hal-hal indah dalam hidup ini. Semoga energi positif dan senyuman yang kamu rasakan hari ini bisa terus membawa keberkahan, serta semoga akan ada jauh lebih banyak lagi momen-momen menyenangkan yang datang menghampiri kamu ke depannya. May your days always be filled with endless laughter, warmth, and bright moments!
+      </div>
+      <div class="nav-btns">
+        <button class="btn" onclick="nextSlide(8)">Kembali</button>
+        <button class="btn" onclick="nextSlide(10)">Lanjut</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 10: RINTANGAN -->
+    <div id="slide-10" class="section">
+      <div class="letter-card">
+Kalau sewaktu-waktu kamu lagi berhadapan dengan masalah atau situasi yang rumit, semoga kamu selalu diberikan ketenangan pikiran, kelapangan dada, dan petunjuk untuk menemukan jalan keluar nya satu per satu ya. Ingat, kamu tidak harus menyelesaikan semuanya dalam satu waktu sekaligus—take it step by step. Kalau butuh teman diskusi untuk cari solusi atau sekadar butuh support system untuk berbagi beban, I am always here for you. No storm lasts forever, dan percayalah di balik setiap ujian, selalu ada pelajaran berharga yang akan membuatmu tumbuh jadi pribadi yang makin tangguh. Take a deep breath and trust that you are strong enough to navigate through this. Sending you my sincere prayers, warm encouragement, and you've got this!
+      </div>
+      <div class="nav-btns">
+        <button class="btn" onclick="nextSlide(9)">Kembali</button>
+        <button class="btn" onclick="nextSlide(11)">Lanjut</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 11: PERTEMANAN -->
+    <div id="slide-11" class="section">
+      <div class="letter-card">
+Semoga kamu dan teman-teman kamu selalu saling menjaga, saling mendukung, dan dikelilingi oleh hubungan pertemanan yang sehat serta tulus ya. Senang rasanya melihat kamu tumbuh dan berproses bersama orang-orang baik di sekelilingmu. Semoga pertemanan kalian selalu dipenuhi rasa saling pengertian, kebaikan, kehangatan, dan hal-hal positif yang saling menguatkan—baik di saat suka maupun duka. I hope you and your friends continue to be a wonderful support system for each other, staying close through every season of life, and may your friendship bring you endless joy, comfort, and beautiful memories together.
+      </div>
+      <div class="nav-btns">
+        <button class="btn" onclick="nextSlide(10)">Kembali</button>
+        <button class="btn" onclick="nextSlide(12)">Lanjut</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 12: KELUARGA -->
+    <div id="slide-12" class="section">
+      <div class="letter-card">
+Semoga kamu dan keluarga tercinta selalu dilimpahi kesehatan, kebahagiaan, dan kedamaian ya. Semoga rumah serta hubungan kalian senantiasa menjadi tempat terbaik untuk pulang, saling menguatkan, dan menjadi penyemangat utama dalam setiap langkah perjalananmu. Semoga kamu dan keluarga selalu diberikan kelancaran rezeki, keharmonisan, serta dilindungi dalam setiap kebersamaan. Di saat suka maupun duka, semoga kalian bisa terus saling menjaga, mendukung, dan menjadi kebanggaan satu sama lain. May your home always be filled with love, laughter, warmth, and endless blessings, and wish you and your beloved family a truly peaceful, healthy, and wonderfully blessed life together.
+      </div>
+      <div class="nav-btns">
+        <button class="btn" onclick="nextSlide(11)">Kembali</button>
+        <button class="btn" onclick="nextSlide(13)">Lanjut</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 13: PASANGAN -->
+    <div id="slide-13" class="section">
+      <div class="letter-card">
+Semoga kamu dan pasangan kamu selalu dilimpahi kebahagiaan, kedamaian, dan kehangatan ya. Semoga hubungan kalian berdua bisa terus tumbuh dengan sehat, saling menguatkan, serta dipenuhi rasa saling percaya, pengertian, dan rasa syukur di setiap harinya. Melihat kalian berdua saling melengkapi rasanya membawa kehangatan tersendiri. Semoga setiap langkah serta rencana yang kalian susun bersama selalu diberi kelancaran, dan semoga rasa sayang serta tawa di antara kalian tidak pernah memudar. May you both continue to grow together with love, patience, and mutual respect, and wish you a peaceful, beautiful, and long-lasting relationship filled with endless joy and blessings through every chapter of life.
+      </div>
+      <div class="nav-btns">
+        <button class="btn" onclick="nextSlide(12)">Kembali</button>
+        <button class="btn" onclick="nextSlide(14)">Lanjut ke Penutup</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 14: KUE ULTAH & KEMBANG API PENUTUP -->
+    <div id="slide-14" class="section">
+      <h2>Happy Birthday Ali</h2>
+      <p style="font-size:0.95rem; color:#aaa;">Sentuh lilin di atas kue untuk meniupnya:</p>
+      
+      <div class="cake">
+        <div class="candle" onclick="blowCandle()">
+          <div class="flame" id="flame"></div>
+        </div>
+      </div>
+
+      <div class="night-flowers-box">
+        <svg viewBox="0 0 200 120" style="width:100%; height:100%;">
+          <path d="M50 120 C50 80, 40 60, 40 40" stroke="#4a7c59" stroke-width="3" fill="none"/>
+          <path d="M100 120 C100 70, 110 50, 105 30" stroke="#4a7c59" stroke-width="3" fill="none"/>
+          <path d="M150 120 C150 85, 160 65, 155 45" stroke="#4a7c59" stroke-width="3" fill="none"/>
+          
+          <!-- Blooming Lily 1 -->
+          <g transform="translate(40,40) scale(0.4)">
+            <path d="M0 0 C-30 -30, -30 -50, 0 -40 C30 -50, 30 -30, 0 0 Z" fill="#ffffff"/>
+            <path d="M0 0 C-40 10, -50 -10, -25 -25 Z" fill="#f0f0f0"/>
+            <path d="M0 0 C40 10, 50 -10, 25 -25 Z" fill="#f0f0f0"/>
+          </g>
+          <!-- Blooming Lily 2 -->
+          <g transform="translate(105,30) scale(0.5)">
+            <path d="M0 0 C-30 -30, -30 -50, 0 -40 C30 -50, 30 -30, 0 0 Z" fill="#e88ab5"/>
+            <path d="M0 0 C-40 10, -50 -10, -25 -25 Z" fill="#df78a8"/>
+            <path d="M0 0 C40 10, 50 -10, 25 -25 Z" fill="#df78a8"/>
+          </g>
+          <!-- Blooming Lily 3 -->
+          <g transform="translate(155,45) scale(0.38)">
+            <path d="M0 0 C-30 -30, -30 -50, 0 -40 C30 -50, 30 -30, 0 0 Z" fill="#ffffff"/>
+            <path d="M0 0 C-40 10, -50 -10, -25 -25 Z" fill="#f0f0f0"/>
+            <path d="M0 0 C40 10, 50 -10, 25 -25 Z" fill="#f0f0f0"/>
+          </g>
+        </svg>
+      </div>
+
+      <button class="btn" style="margin-top:25px;" onclick="nextSlide(1)">Mulai Dari Awal</button>
+    </div>
+
+  </div>
+
+  <script>
+    /* ==========================================
+       1. FIREWORKS ALGORITHM
+       ========================================== */
+    const canvas = document.getElementById('canvas-bg');
+    const ctx = canvas.getContext('2d');
+
+    let width, height;
+    function resizeCanvas() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    let fireworks = [];
+
+    function makeFullCircleFirework(fire) {
+      let color = ['#e88ab5', '#f3d08c', '#a5d8ff', '#ff8787', '#b197fc'][Math.floor(Math.random() * 5)];
+      let velocity = Math.random() * 6 + 6;
+      let fireNumber = 12;
+      let max = fireNumber * 3;
+
+      for (let i = 0; i < max; i++) {
+        let rad = (i * Math.PI * 2) / max;
+        fireworks.push({
+          x: fire.x, 
+          y: fire.y,
+          size: Math.random() + 1.5,
+          fill: color,
+          vx: Math.cos(rad) * velocity + (Math.random() - 0.5) * 0.5,
+          vy: Math.sin(rad) * velocity + (Math.random() - 0.5) * 0.5,
+          ay: 0.06, 
+          alpha: 1,
+          life: Math.round((Math.random() * 20) / 2) + 20
+        });
+      }
+    }
+
+    function launchFireworks() {
+      for(let i = 0; i < 4; i++) {
+        setTimeout(() => {
+          makeFullCircleFirework({
+            x: Math.random() * (width * 0.8) + width * 0.1,
+            y: Math.random() * (height * 0.4) + height * 0.1
+          });
+        }, i * 350);
+      }
+    }
+
+    function animateBg() {
+      ctx.fillStyle = 'rgba(10, 10, 16, 0.2)';
+      ctx.fillRect(0, 0, width, height);
+
+      fireworks.forEach((f, index) => {
+        f.x += f.vx;
+        f.y += f.vy;
+        f.vy += f.ay;
+        f.alpha -= 0.015;
+
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, f.alpha);
+        ctx.fillStyle = f.fill;
+        ctx.beginPath();
+        ctx.arc(f.x, f.y, f.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+
+        if (f.alpha <= 0) {
+          fireworks.splice(index, 1);
+        }
+      });
+
+      requestAnimationFrame(animateBg);
+    }
+    animateBg();
+
+    /* ==========================================
+       2. START EXPERIENCE & MUSIC
+       ========================================== */
+    function startExperience() {
+      const audio = document.getElementById('bg-music');
+      audio.play().catch(e => console.log("Audio play blocked", e));
+      
+      launchFireworks();
+      nextSlide('1b');
+    }
+
+    /* ==========================================
+       3. NAVIGATION & DATE VERIFICATION
+       ========================================== */
+    function nextSlide(slideId) {
+      document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+      document.getElementById(`slide-${slideId}`).classList.add('active');
+    }
+
+    function verifyDate() {
+      const input = document.getElementById('date-input').value.trim().toLowerCase();
+      if (input.includes('28 september') || input.includes('28-09') || input.includes('28/09')) {
+        document.getElementById('date-error').style.display = 'none';
+        nextSlide(4);
+      } else {
+        document.getElementById('date-error').style.display = 'block';
+      }
+    }
+
+    /* ==========================================
+       4. BOUQUET BUILDER
+       ========================================== */
+    function addLily(mainColor, subColor) {
+      const display = document.getElementById('bouquet-display');
+      const placeholder = document.getElementById('bouquet-placeholder');
+      if (placeholder) placeholder.style.display = 'none';
+
+      const svgNS = "http://www.w3.org/2000/svg";
+      const svg = document.createElementNS(svgNS, "svg");
+      svg.setAttribute("viewBox", "0 0 100 100");
+      svg.style.width = "70px";
+      svg.style.height = "70px";
+      svg.style.position = "absolute";
+      svg.style.left = `${Math.random() * 120 + 30}px`;
+      svg.style.top = `${Math.random() * 120 + 30}px`;
+
+      svg.innerHTML = `
+        <path d="M50 50 C20 15, 20 0, 50 10 C80 0, 80 15, 50 50 Z" fill="${mainColor}" stroke="${subColor}" />
+        <path d="M50 50 C15 80, 0 70, 10 45 C0 15, 20 20, 50 50 Z" fill="${mainColor}" stroke="${subColor}" />
+        <path d="M50 50 C85 80, 100 70, 90 45 C100 15, 80 20, 50 50 Z" fill="${mainColor}" stroke="${subColor}" />
+        <circle cx="50" cy="45" r="3" fill="#ffd700" />
+      `;
+
+      display.appendChild(svg);
+    }
+
+    /* ==========================================
+       5. BLOW CANDLE INTERACTION
+       ========================================== */
+    function blowCandle() {
+      document.getElementById('flame').classList.add('off');
+      launchFireworks();
+    }
+  </script>
+</body>
+</html>
